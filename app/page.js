@@ -34,18 +34,8 @@ export default function HomePage() {
               >
                 Platform
               </Link>
-              <Link
-                href="#farmers"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
-              >
-                Farmers
-              </Link>
-              <Link
-                href="#buyers"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
-              >
-                Buyers
-              </Link>
+              
+              
               <Link
                 href="#stories"
                 className="text-gray-300 hover:text-white font-medium transition-colors"
@@ -53,12 +43,18 @@ export default function HomePage() {
                 Stories
               </Link>
               <div className="flex items-center space-x-3">
-                <button className="px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200"
+                >
                   Login
-                </button>
-                <button className="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-200 font-medium">
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-200 font-medium"
+                >
                   Get Started
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -66,7 +62,10 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section - Split Screen */}
-      <section className="relative min-h-screen flex items-center pt-20">
+      <section
+        className="relative min-h-screen flex items-center pt-20 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/background3.jpg')" }}
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black to-blue-900/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center mb-16">

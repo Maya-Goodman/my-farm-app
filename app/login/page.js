@@ -1,11 +1,56 @@
+"use client";
+
 import Link from "next/link";
-import { Leaf, ArrowRight } from "lucide-react"; // Assuming these are available as in your HomePage
+import { Leaf, ArrowRight, Mail, Lock } from "lucide-react"; // Import Mail and Lock icons
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
+
+    const dummyUsers = {
+      "buyer@example.com": {
+        password: "buyerpassword",
+        redirect: "/buyerdashboard",
+      },
+      "farmer@example.com": {
+        password: "farmerpassword",
+        redirect: "/farmdashboard",
+      },
+      "company@example.com": {
+        password: "companypassword",
+        redirect: "/companydashboard",
+      },
+    };
+
+    const user = dummyUsers[email];
+
+    if (user && user.password === password) {
+      console.log(`Logged in as ${email}. Redirecting to ${user.redirect}`);
+      router.push(user.redirect);
+    } else {
+      setError("Invalid email or password. Please try again.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-      {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black to-blue-900/20 z-0"></div>
+    <div
+      className="min-h-screen text-white flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: "url('/images/background4.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black/30 to-blue-900/20 z-0"></div>
 
       <div className="relative z-10 bg-gray-900/50 border border-gray-800 backdrop-blur-lg p-8 md:p-10 rounded-3xl shadow-2xl max-w-md w-full">
         <div className="text-center mb-8">
@@ -20,7 +65,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -28,14 +73,23 @@ export default function LoginPage() {
             >
               Email Address
             </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              className="w-full px-5 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              placeholder="you@example.com"
-            />
+            <div className="relative">
+              {" "}
+              {/* Added relative positioning */}
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-gray-500" /> {/* Mail Icon */}
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                className="w-full px-5 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 pl-10" // Added pl-10 for padding
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
           </div>
 
           <div>
@@ -45,14 +99,23 @@ export default function LoginPage() {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              className="w-full px-5 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              {" "}
+              {/* Added relative positioning */}
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-gray-500" /> {/* Lock Icon */}
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                className="w-full px-5 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pl-10" // Added pl-10 for padding
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between text-sm">
@@ -75,6 +138,8 @@ export default function LoginPage() {
             </Link>
           </div>
 
+          {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white text-lg py-4 rounded-xl group transition-all duration-200 font-medium flex items-center justify-center"
@@ -87,7 +152,7 @@ export default function LoginPage() {
         <p className="mt-8 text-center text-gray-400 text-sm">
           Don't have an account?{" "}
           <Link
-            href="/get-started"
+            href="/register"
             className="font-medium text-green-400 hover:text-green-300 transition-colors"
           >
             Get Started

@@ -70,8 +70,18 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full bg-gray-900/70 backdrop-blur-lg rounded-3xl p-8 sm:p-10 border border-gray-800 shadow-2xl">
+    <div
+      className="min-h-screen text-white flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative"
+      style={{
+        backgroundImage: "url('/images/background8.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black/30 to-blue-900/20 z-0"></div>
+
+      <div className="relative z-10 max-w-3xl w-full bg-gray-900/70 backdrop-blur-lg rounded-3xl p-8 sm:p-10 border border-gray-800 shadow-2xl">
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center space-x-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
@@ -148,20 +158,6 @@ export default function RegisterPage() {
                 icon={Mail}
               />
               <InputField
-                id="password"
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
-                id="confirm-password"
-                label="Confirm Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
                 id="phone"
                 label="Phone Number (Optional)"
                 type="tel"
@@ -174,6 +170,21 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="123 Main St, Anytown, USA"
                 icon={MapPin}
+              />
+              {/* Password fields moved to bottom for Individual Buyer */}
+              <InputField
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
+              />
+              <InputField
+                id="confirm-password"
+                label="Confirm Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
               />
               <button
                 type="submit"
@@ -209,20 +220,6 @@ export default function RegisterPage() {
                 icon={Mail}
               />
               <InputField
-                id="farmer-password"
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
-                id="farmer-confirm-password"
-                label="Confirm Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
                 id="farm-phone"
                 label="Farm Phone Number"
                 type="tel"
@@ -242,6 +239,21 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="e.g., Organic Vegetables, Dairy, Fruits"
                 icon={ClipboardList}
+              />
+              {/* Password fields moved to bottom for Farmer */}
+              <InputField
+                id="farmer-password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
+              />
+              <InputField
+                id="farmer-confirm-password"
+                label="Confirm Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
               />
               <button
                 type="submit"
@@ -277,20 +289,6 @@ export default function RegisterPage() {
                 icon={Mail}
               />
               <InputField
-                id="company-password"
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
-                id="company-confirm-password"
-                label="Confirm Password"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <InputField
                 id="company-phone"
                 label="Company Phone Number"
                 type="tel"
@@ -310,6 +308,21 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="e.g., Restaurant, Retailer, Distributor"
                 icon={Briefcase}
+              />
+              {/* Password fields moved to bottom for Company */}
+              <InputField
+                id="company-password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
+              />
+              <InputField
+                id="company-confirm-password"
+                label="Confirm Password"
+                type="password"
+                placeholder="••••••••"
+                icon={Lock}
               />
               <button
                 type="submit"
