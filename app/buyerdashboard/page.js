@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import GlassCard from "../components/GlassCard";// Path to GlassCard
+import GlassCard from "../components/GlassCard"; // Path to GlassCard
 import ProductCardBuyer from "./components/ProductCardBuyer";
 import Wishlist from "./components/Wishlist";
 import InteractedFarmers from "./components/InteractedFarmers";
@@ -84,15 +84,51 @@ const initialFarmers = [
     name: "Green Valley Farms",
     location: "Rural Area A",
     rating: 4.8,
+    produce: "Various Vegetables, Grains",
   },
-  { id: 102, name: "Sunny Side Farm", location: "Valley Town", rating: 4.5 },
+  {
+    id: 102,
+    name: "Sunny Side Farm",
+    location: "Valley Town",
+    rating: 4.5,
+    produce: "Eggs, Dairy Products",
+  },
   {
     id: 103,
     name: "Ridgeview Produce",
     location: "Mountain Pass",
     rating: 4.2,
+    produce: "Root Vegetables, Fruits",
   },
-  { id: 104, name: "Golden Fields Co.", location: "Flatlands", rating: 4.0 },
+  {
+    id: 104,
+    name: "Golden Fields Co.",
+    location: "Flatlands",
+    rating: 4.0,
+    produce: "Maize, Sorghum",
+  },
+  // New dummy data for interacted farmers
+  {
+    id: 105,
+    name: "Kutlo's Organics",
+    location: "Mochudi",
+    rating: 4.7,
+    produce: "Organic Vegetables, Herbs",
+  },
+  {
+    id: 106,
+    name: "Chanda's Poultry",
+    location: "Francistown",
+    rating: 4.9,
+    produce: "Poultry, Eggs",
+  },
+  {
+    id: 107,
+    name: "Kago's Kgalagadi",
+    location: "Kgalagadi",
+    rating: 4.3,
+    produce: "Potatoes, Watermelons",
+  },
 ];
 
 export default function BuyerDashboard() {
@@ -101,7 +137,9 @@ export default function BuyerDashboard() {
   );
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  // Interacted farmers state, updated when a purchase or interaction happens
+  // Initialize interactedFarmers with ALL initialFarmers data
+  // This ensures Kutlo, Chanda, Kago are always visible if that's the desired behavior.
+  // If you only want them to appear *after* interaction, then the previous logic was fine.
   const [interactedFarmers, setInteractedFarmers] = useState(initialFarmers);
   const [notification, setNotification] = useState(null); // { message, type: 'success' | 'error' | 'info' }
 
@@ -128,6 +166,7 @@ export default function BuyerDashboard() {
     showNotification(`${product.name} added to cart!`, "success");
 
     // Automatically add the farmer to 'interacted farmers' when their product is added to cart
+    // Only add if not already present to avoid duplicates
     const farmer = initialFarmers.find((f) => f.id === product.farmerId);
     if (farmer && !interactedFarmers.some((f) => f.id === farmer.id)) {
       setInteractedFarmers((prevFarmers) => [...prevFarmers, farmer]);
@@ -259,15 +298,10 @@ export default function BuyerDashboard() {
               </span>
               <button
                 onClick={handlePurchase}
-                className="px-6 py-2 rounded-lg text-white shadow-md transition-all duration-300"
+                className="px-6 py-2 rounded-lg text-white shadow-md transition-all duration-300 hover:shadow-lg"
                 style={{
                   background: "linear-gradient(to right, #2a9d8f, #264653)",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)")
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               >
                 Place Order
               </button>
@@ -308,6 +342,7 @@ export default function BuyerDashboard() {
           onRemoveFromWishlist={handleToggleWishlist}
           onAddToCartFromWishlist={handleAddToCart}
         />
+        {/* Pass the updated interactedFarmers state */}
         <InteractedFarmers farmers={interactedFarmers} />
       </div>
     </>

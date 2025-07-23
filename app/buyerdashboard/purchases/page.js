@@ -69,7 +69,7 @@ export default function PurchasesPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-green-300">
-                    ${order.total.toFixed(2)}
+                    P{order.total.toFixed(2)}
                   </p>
                   <button className="mt-2 px-4 py-2 bg-white bg-opacity-10 text-white rounded-lg hover:bg-opacity-20 transition-colors">
                     View Details

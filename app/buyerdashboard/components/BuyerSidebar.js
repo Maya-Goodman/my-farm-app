@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Import usePathname hook
+import { usePathname, useRouter } from "next/navigation"; // Import usePathname and useRouter hooks
 
 import {
   Menu,
@@ -16,6 +16,8 @@ import {
   User,
   Leaf,
   LayoutDashboard,
+  Settings, // Import Settings icon
+  LogOut, // Import LogOut icon
 } from "lucide-react";
 
 const buyerNavItems = [
@@ -25,10 +27,12 @@ const buyerNavItems = [
   { name: "My Purchases", icon: BookText, href: "/buyerdashboard/purchases" },
   { name: "My Farmers", icon: Handshake, href: "/buyerdashboard/farmers" },
   { name: "Weather (Buyer)", icon: CloudSun, href: "/buyerdashboard/weather" },
+  { name: "Settings", icon: Settings, href: "/buyerdashboard/settings" }, // Added Settings
 ];
 
 export default function BuyerSidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const currentPath = usePathname(); // Get current path using usePathname hook
+  const router = useRouter(); // Initialize useRouter
 
   const [activeItem, setActiveItem] = useState(() => {
     // Determine active item based on currentPath
@@ -43,6 +47,12 @@ export default function BuyerSidebar({ isSidebarOpen, setIsSidebarOpen }) {
     backdropFilter: "blur(10px)",
     border: "1px solid rgba(255, 255, 255, 0.2)",
     boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+  };
+
+  const handleLogout = () => {
+    // Here you would typically clear user session/token
+    // For now, we'll just redirect
+    router.push("/login");
   };
 
   return (
@@ -95,6 +105,7 @@ export default function BuyerSidebar({ isSidebarOpen, setIsSidebarOpen }) {
                           currentPath.startsWith(item.href))
                           ? "linear-gradient(to right, #2a9d8f, #264653)"
                           : "transparent",
+                      // Using both background and backgroundColor for broader compatibility
                       background:
                         currentPath === item.href ||
                         (item.href !== "/buyerdashboard" &&
@@ -130,7 +141,7 @@ export default function BuyerSidebar({ isSidebarOpen, setIsSidebarOpen }) {
         style={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)" }}
       >
         <motion.div
-          className="flex items-center p-3 rounded-lg text-white transition-colors"
+          className="flex items-center p-3 rounded-lg text-white transition-colors mb-2" // Added mb-2 for spacing
           whileHover={{ scale: 1.02, x: 5 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -146,6 +157,26 @@ export default function BuyerSidebar({ isSidebarOpen, setIsSidebarOpen }) {
             </motion.span>
           )}
         </motion.div>
+
+        {/* Logout Button */}
+        <motion.button
+          onClick={handleLogout}
+          className="flex items-center p-3 rounded-lg text-white transition-colors w-full text-left hover:bg-red-700/30"
+          whileHover={{ scale: 1.02, x: 5 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <LogOut size={20} className="shrink-0" />
+          {isSidebarOpen && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="ml-4 whitespace-nowrap"
+            >
+              Logout
+            </motion.span>
+          )}
+        </motion.button>
       </div>
     </motion.div>
   );

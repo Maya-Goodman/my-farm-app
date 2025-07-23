@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import Layout from "@/app/components/Layout";
@@ -55,7 +55,42 @@ const initialInventory = [
     category: "Equipment",
     minStock: 30,
   },
+  {
+    id: 6,
+    name: "Tractor Oil",
+    stock: 5,
+    unit: "liters",
+    category: "Fluids",
+    minStock: 2,
+  },
+  {
+    id: 7,
+    name: "Seeds (Corn)",
+    stock: 50,
+    unit: "packs",
+    category: "Crops",
+    minStock: 15,
+  },
+  {
+    id: 8,
+    name: "Safety Goggles",
+    stock: 20,
+    unit: "units",
+    category: "PPE",
+    minStock: 8,
+  },
 ];
+
+// Define aesthetically pleasing colors for each category
+const categoryColors = {
+  Chemicals: "#e76f51", // Slightly reddish-orange, warm
+  Tools: "#2a9d8f", // Your existing greenish-teal
+  PPE: "#e9c46a", // Muted yellow/gold
+  Equipment: "#f4a261", // Orange-ish
+  Fluids: "#8ab6d9", // Softer blue
+  Crops: "#90be6d", // A nice green
+  Default: "rgba(255, 255, 255, 0.2)", // Fallback if category not found, subtle
+};
 
 export default function InventoryManager() {
   const [inventory, setInventory] = useState(initialInventory);
@@ -64,9 +99,10 @@ export default function InventoryManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
 
-  const categories = [
+  // Dynamically get categories including from new items
+  const allCategories = [
     "All",
-    ...new Set(initialInventory.map((item) => item.category)),
+    ...new Set(inventory.map((item) => item.category)),
   ];
 
   const filteredInventory = inventory.filter((item) => {
@@ -84,15 +120,17 @@ export default function InventoryManager() {
   };
 
   const getStockStatusColor = (stock, minStock) => {
-    if (stock <= minStock) return "rgb(251 146 60)"; // text-orange-400 or red-400 depending on preference
-    return "rgb(74 222 128)"; // text-green-400
+    if (stock <= minStock) return "rgb(251 146 60)"; // Tailwind's text-orange-400
+    return "rgb(74 222 128)"; // Tailwind's text-green-400
   };
 
   const handleAddItem = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newItem = {
-      id: currentItem ? currentItem.id : inventory.length + 1,
+      id: currentItem
+        ? currentItem.id
+        : Math.max(...inventory.map((i) => i.id), 0) + 1, // Generate unique ID
       name: formData.get("name"),
       stock: parseInt(formData.get("stock")),
       unit: formData.get("unit"),
@@ -172,25 +210,25 @@ export default function InventoryManager() {
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
           >
-            {categories.map((cat) => (
-              <option
-                key={cat}
-                value={cat}
-                style={{ backgroundColor: "#264653", color: "white" }}
-              >
-                {cat}
-              </option>
-            ))}
+            {allCategories.map(
+              (
+                cat // Use allCategories here
+              ) => (
+                <option
+                  key={cat}
+                  value={cat}
+                  style={{ backgroundColor: "#264653", color: "white" }}
+                >
+                  {cat}
+                </option>
+              )
+            )}
           </select>
           <button
             onClick={() => openModal()}
-            className="flex items-center px-4 py-2 text-white rounded-lg shadow-md transition-all duration-300"
+            className="flex items-center px-4 py-2 text-white rounded-lg shadow-md transition-all duration-300 hover:shadow-lg" // Added Tailwind hover
             style={{
               background: "linear-gradient(to right, #2a9d8f, #264653)",
-              "&:hover": {
-                boxShadow:
-                  "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-              },
             }}
           >
             <Plus size={20} className="mr-2" /> Add Item
@@ -207,296 +245,317 @@ export default function InventoryManager() {
             No inventory items found.
           </p>
         ) : (
-          filteredInventory.map((item) => (
-            <GlassCard key={item.id} className="flex flex-col">
-              <h3 className="text-xl font-semibold text-white mb-2">
-                {item.name}
-              </h3>
-              <p className="text-white text-sm mb-4" style={{ opacity: 0.8 }}>
-                Category: {item.category}
-              </p>
-
-              <div className="flex items-center mb-2">
-                <Package
-                  size={20}
-                  className="mr-2"
-                  style={{ color: "white", opacity: 0.7 }}
-                />
-                <p className="text-white text-lg">
-                  Stock:{" "}
-                  <span className="font-bold">
-                    {item.stock} {item.unit}
-                  </span>
-                </p>
-              </div>
-              <div className="flex items-center mb-4">
-                {item.stock <= item.minStock ? (
-                  <AlertTriangle size={20} className="text-red-400 mr-2" />
-                ) : (
-                  <CheckCircle size={20} className="text-green-400 mr-2" />
-                )}
-                <span
-                  className="font-semibold"
+          <AnimatePresence>
+            {" "}
+            {/* Enable exit animations for items */}
+            {filteredInventory.map((item) => (
+              <motion.div // Wrap GlassCard in motion.div for animation
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <GlassCard
+                  className="flex flex-col relative overflow-hidden" // Added relative and overflow-hidden for pseudo-element
                   style={{
-                    color: getStockStatusColor(item.stock, item.minStock),
+                    borderLeft: `8px solid ${
+                      categoryColors[item.category] || categoryColors.Default
+                    }`, // Dynamic left border
                   }}
                 >
-                  {getStockStatus(item.stock, item.minStock)}
-                </span>
-                {item.stock <= item.minStock && (
-                  <span
-                    className="text-white text-sm ml-2"
-                    style={{ opacity: 0.6 }}
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {item.name}
+                  </h3>
+                  <p
+                    className="text-white text-sm mb-4"
+                    style={{ opacity: 0.8 }}
                   >
-                    (Min: {item.minStock} {item.unit})
-                  </span>
-                )}
-              </div>
+                    Category: {item.category}
+                  </p>
 
-              <div className="flex justify-end gap-2 mt-auto">
-                <button
-                  onClick={() => openModal(item)}
-                  className="p-2 rounded-full text-white transition-colors"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
-                  }}
-                  title="Edit Item"
-                >
-                  <Edit size={18} />
-                </button>
-                <button
-                  onClick={() => handleDeleteItem(item.id)}
-                  className="p-2 rounded-full text-white transition-colors"
-                  style={{
-                    backgroundColor: "rgba(239, 68, 68, 0.3)",
-                    "&:hover": { backgroundColor: "rgba(239, 68, 68, 0.4)" },
-                  }}
-                  title="Delete Item"
-                >
-                  <Trash size={18} />
-                </button>
-              </div>
-            </GlassCard>
-          ))
+                  <div className="flex items-center mb-2">
+                    <Package
+                      size={20}
+                      className="mr-2"
+                      style={{ color: "white", opacity: 0.7 }}
+                    />
+                    <p className="text-white text-lg">
+                      Stock:{" "}
+                      <span className="font-bold">
+                        {item.stock} {item.unit}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex items-center mb-4">
+                    {item.stock <= item.minStock ? (
+                      <AlertTriangle
+                        size={20}
+                        className="text-orange-400 mr-2"
+                      /> // Changed to orange-400
+                    ) : (
+                      <CheckCircle size={20} className="text-green-400 mr-2" />
+                    )}
+                    <span
+                      className="font-semibold"
+                      style={{
+                        color: getStockStatusColor(item.stock, item.minStock),
+                      }}
+                    >
+                      {getStockStatus(item.stock, item.minStock)}
+                    </span>
+                    {item.stock <= item.minStock && (
+                      <span
+                        className="text-white text-sm ml-2"
+                        style={{ opacity: 0.6 }}
+                      >
+                        (Min: {item.minStock} {item.unit})
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-auto">
+                    <button
+                      onClick={() => openModal(item)}
+                      className="p-2 rounded-full text-white transition-colors hover:bg-white hover:bg-opacity-20" // Added Tailwind hover
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      }}
+                      title="Edit Item"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(item.id)}
+                      className="p-2 rounded-full text-white transition-colors hover:bg-red-500 hover:bg-opacity-40" // Added Tailwind hover
+                      style={{
+                        backgroundColor: "rgba(239, 68, 68, 0.3)",
+                      }}
+                      title="Delete Item"
+                    >
+                      <Trash size={18} />
+                    </button>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
 
-      {isModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-        >
-          <GlassCard className="w-full max-w-md">
-            <h3 className="text-2xl font-bold text-white mb-6">
-              {currentItem ? "Edit Inventory Item" : "Add New Inventory Item"}
-            </h3>
-            <form onSubmit={handleAddItem}>
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block text-white text-sm font-bold mb-2"
-                >
-                  Item Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  defaultValue={currentItem?.name || ""}
-                  className="w-full p-3 rounded-lg text-white"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    outline: "none",
-                    "--tw-ring-color": "#2a9d8f",
-                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
-                    transition: "box-shadow 0.15s ease-in-out",
-                  }}
-                  onFocus={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 2px var(--tw-ring-color)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 0px var(--tw-ring-color)")
-                  }
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="stock"
-                  className="block text-white text-sm font-bold mb-2"
-                >
-                  Current Stock
-                </label>
-                <input
-                  type="number"
-                  id="stock"
-                  name="stock"
-                  defaultValue={currentItem?.stock || ""}
-                  className="w-full p-3 rounded-lg text-white"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    outline: "none",
-                    "--tw-ring-color": "#2a9d8f",
-                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
-                    transition: "box-shadow 0.15s ease-in-out",
-                  }}
-                  onFocus={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 2px var(--tw-ring-color)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 0px var(--tw-ring-color)")
-                  }
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="unit"
-                  className="block text-white text-sm font-bold mb-2"
-                >
-                  Unit
-                </label>
-                <input
-                  type="text"
-                  id="unit"
-                  name="unit"
-                  defaultValue={currentItem?.unit || ""}
-                  className="w-full p-3 rounded-lg text-white"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    outline: "none",
-                    "--tw-ring-color": "#2a9d8f",
-                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
-                    transition: "box-shadow 0.15s ease-in-out",
-                  }}
-                  onFocus={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 2px var(--tw-ring-color)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 0px var(--tw-ring-color)")
-                  }
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="minStock"
-                  className="block text-white text-sm font-bold mb-2"
-                >
-                  Minimum Stock Alert
-                </label>
-                <input
-                  type="number"
-                  id="minStock"
-                  name="minStock"
-                  defaultValue={currentItem?.minStock || ""}
-                  className="w-full p-3 rounded-lg text-white"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    outline: "none",
-                    "--tw-ring-color": "#2a9d8f",
-                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
-                    transition: "box-shadow 0.15s ease-in-out",
-                  }}
-                  onFocus={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 2px var(--tw-ring-color)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 0px var(--tw-ring-color)")
-                  }
-                  required
-                />
-              </div>
-              <div className="mb-6">
-                <label
-                  htmlFor="category"
-                  className="block text-white text-sm font-bold mb-2"
-                >
-                  Category
-                </label>
-                <select
-                  id="category"
-                  name="category"
-                  defaultValue={currentItem?.category || ""}
-                  className="w-full p-3 rounded-lg text-white"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    outline: "none",
-                    "--tw-ring-color": "#2a9d8f",
-                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
-                    transition: "box-shadow 0.15s ease-in-out",
-                  }}
-                  onFocus={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 2px var(--tw-ring-color)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 0 0px var(--tw-ring-color)")
-                  }
-                  required
-                >
-                  <option
-                    value=""
-                    disabled
-                    style={{ backgroundColor: "#264653", color: "white" }}
+      {/* Modal remains largely the same */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          >
+            <GlassCard className="w-full max-w-md">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                {currentItem ? "Edit Inventory Item" : "Add New Inventory Item"}
+              </h3>
+              <form onSubmit={handleAddItem}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="name"
+                    className="block text-white text-sm font-bold mb-2"
                   >
-                    Select a category
-                  </option>
-                  {categories
-                    .filter((cat) => cat !== "All")
-                    .map((cat) => (
-                      <option
-                        key={cat}
-                        value={cat}
-                        style={{ backgroundColor: "#264653", color: "white" }}
-                      >
-                        {cat}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div className="flex justify-end gap-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-2 rounded-lg text-white transition-colors"
-                  style={{
-                    backgroundColor: "rgba(107, 114, 128, 0.3)",
-                    "&:hover": { backgroundColor: "rgba(107, 114, 128, 0.4)" },
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 rounded-lg text-white shadow-md transition-all duration-300"
-                  style={{
-                    background: "linear-gradient(to right, #2a9d8f, #264653)",
-                    "&:hover": {
-                      boxShadow:
-                        "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                    },
-                  }}
-                >
-                  {currentItem ? "Update Item" : "Add Item"}
-                </button>
-              </div>
-            </form>
-          </GlassCard>
-        </motion.div>
-      )}
+                    Item Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    defaultValue={currentItem?.name || ""}
+                    className="w-full p-3 rounded-lg text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      outline: "none",
+                      "--tw-ring-color": "#2a9d8f",
+                      boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                      transition: "box-shadow 0.15s ease-in-out",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 2px var(--tw-ring-color)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 0px var(--tw-ring-color)")
+                    }
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stock"
+                    className="block text-white text-sm font-bold mb-2"
+                  >
+                    Current Stock
+                  </label>
+                  <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    defaultValue={currentItem?.stock || ""}
+                    className="w-full p-3 rounded-lg text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      outline: "none",
+                      "--tw-ring-color": "#2a9d8f",
+                      boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                      transition: "box-shadow 0.15s ease-in-out",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 2px var(--tw-ring-color)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 0px var(--tw-ring-color)")
+                    }
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="unit"
+                    className="block text-white text-sm font-bold mb-2"
+                  >
+                    Unit
+                  </label>
+                  <input
+                    type="text"
+                    id="unit"
+                    name="unit"
+                    defaultValue={currentItem?.unit || ""}
+                    className="w-full p-3 rounded-lg text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      outline: "none",
+                      "--tw-ring-color": "#2a9d8f",
+                      boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                      transition: "box-shadow 0.15s ease-in-out",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 2px var(--tw-ring-color)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 0px var(--tw-ring-color)")
+                    }
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="minStock"
+                    className="block text-white text-sm font-bold mb-2"
+                  >
+                    Minimum Stock Alert
+                  </label>
+                  <input
+                    type="number"
+                    id="minStock"
+                    name="minStock"
+                    defaultValue={currentItem?.minStock || ""}
+                    className="w-full p-3 rounded-lg text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      outline: "none",
+                      "--tw-ring-color": "#2a9d8f",
+                      boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                      transition: "box-shadow 0.15s ease-in-out",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 2px var(--tw-ring-color)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 0px var(--tw-ring-color)")
+                    }
+                    required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="category"
+                    className="block text-white text-sm font-bold mb-2"
+                  >
+                    Category
+                  </label>
+                  <select
+                    id="category"
+                    name="category"
+                    defaultValue={currentItem?.category || ""}
+                    className="w-full p-3 rounded-lg text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      outline: "none",
+                      "--tw-ring-color": "#2a9d8f",
+                      boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                      transition: "box-shadow 0.15s ease-in-out",
+                    }}
+                    onFocus={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 2px var(--tw-ring-color)")
+                    }
+                    onBlur={(e) =>
+                      (e.target.style.boxShadow =
+                        "0 0 0 0px var(--tw-ring-color)")
+                    }
+                    required
+                  >
+                    <option
+                      value=""
+                      disabled
+                      style={{ backgroundColor: "#264653", color: "white" }}
+                    >
+                      Select a category
+                    </option>
+                    {allCategories // Use allCategories here
+                      .filter((cat) => cat !== "All")
+                      .map((cat) => (
+                        <option
+                          key={cat}
+                          value={cat}
+                          style={{ backgroundColor: "#264653", color: "white" }}
+                        >
+                          {cat}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="flex justify-end gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-6 py-2 rounded-lg text-white transition-colors hover:bg-gray-600 hover:bg-opacity-40" // Added Tailwind hover
+                    style={{
+                      backgroundColor: "rgba(107, 114, 128, 0.3)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 rounded-lg text-white shadow-md transition-all duration-300 hover:shadow-lg" // Added Tailwind hover
+                    style={{
+                      background: "linear-gradient(to right, #2a9d8f, #264653)",
+                    }}
+                  >
+                    {currentItem ? "Update Item" : "Add Item"}
+                  </button>
+                </div>
+              </form>
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }

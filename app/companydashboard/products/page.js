@@ -67,10 +67,51 @@ const dummyBulkProducts = [
 export default function CompanyProductsPage() {
   const [products, setProducts] = useState(dummyBulkProducts);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProductForQuote, setSelectedProductForQuote] = useState(null);
+  const [desiredQuantity, setDesiredQuantity] = useState("");
+  const [quoteItems, setQuoteItems] = useState([]); // To store items added to quote
 
-  const handleAddToQuote = (product) => {
-    alert(`Added ${product.name} to quote request! (Simulated)`);
-    // In a real app, this would add to a quotation cart or send a request
+  const handleAddToQuoteClick = (product) => {
+    setSelectedProductForQuote(product);
+    setDesiredQuantity(""); // Reset quantity when opening new form
+  };
+
+  const handleSubmitQuoteRequest = (e) => {
+    e.preventDefault();
+    if (!selectedProductForQuote || !desiredQuantity) {
+      alert("Please select a product and enter a desired quantity.");
+      return;
+    }
+
+    const quantity = parseInt(desiredQuantity, 10);
+    if (isNaN(quantity) || quantity < selectedProductForQuote.minOrder) {
+      alert(
+        `Please enter a quantity of at least ${selectedProductForQuote.minOrder} ${selectedProductForQuote.unit}.`
+      );
+      return;
+    }
+
+    const newQuoteItem = {
+      productId: selectedProductForQuote.id,
+      productName: selectedProductForQuote.name,
+      quantity: quantity,
+      unit: selectedProductForQuote.unit,
+      farmerName: selectedProductForQuote.farmerName,
+    };
+
+    setQuoteItems((prevItems) => [...prevItems, newQuoteItem]);
+    alert(
+      `Added ${quantity} ${selectedProductForQuote.unit} of ${selectedProductForQuote.name} to your quote request!`
+    );
+
+    // Reset form
+    setSelectedProductForQuote(null);
+    setDesiredQuantity("");
+  };
+
+  const handleCancelQuote = () => {
+    setSelectedProductForQuote(null);
+    setDesiredQuantity("");
   };
 
   const filteredProducts = products.filter(
@@ -109,12 +150,80 @@ export default function CompanyProductsPage() {
               <BulkProductCard
                 key={product.id}
                 product={product}
-                onAddToQuote={handleAddToQuote}
+                onAddToQuote={handleAddToQuoteClick} // Pass the new handler
               />
             ))
           )}
         </div>
       </GlassCard>
+
+      {/* Quote Request Form */}
+      {selectedProductForQuote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <GlassCard className="p-8 w-full max-w-md mx-auto relative">
+            <h3 className="text-2xl font-bold text-[#333] mb-6">
+              Request Quote for {selectedProductForQuote.name}
+            </h3>
+            <form onSubmit={handleSubmitQuoteRequest}>
+              <div className="mb-4">
+                <label
+                  htmlFor="desiredQuantity"
+                  className="block text-gray-700 text-sm font-semibold mb-2"
+                >
+                  Desired Quantity ({selectedProductForQuote.unit}, min{" "}
+                  {selectedProductForQuote.minOrder})
+                </label>
+                <input
+                  type="number"
+                  id="desiredQuantity"
+                  className="w-full p-3 rounded-lg bg-gray-100 text-[#333] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={desiredQuantity}
+                  onChange={(e) => setDesiredQuantity(e.target.value)}
+                  min={selectedProductForQuote.minOrder}
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={handleCancelQuote}
+                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
+                >
+                  Add to Quote
+                </button>
+              </div>
+            </form>
+          </GlassCard>
+        </div>
+      )}
+
+      {/* Display current quote items (Optional, for demonstration) */}
+      {quoteItems.length > 0 && (
+        <GlassCard className="p-6 mt-8">
+          <h3 className="text-2xl font-bold text-[#333] mb-6">
+            Your Current Quote Request
+          </h3>
+          <ul className="list-disc list-inside text-gray-800">
+            {quoteItems.map((item, index) => (
+              <li key={index} className="mb-2">
+                {item.quantity} {item.unit} of {item.productName} from{" "}
+                {item.farmerName}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 text-right">
+            <button className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200">
+              Submit Full Quote Request
+            </button>
+          </div>
+        </GlassCard>
+      )}
     </>
   );
 }

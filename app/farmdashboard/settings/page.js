@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import Layout from "@/app/components/Layout";
 import GlassCard from "@/app/components/GlassCard";
-import { User, Bell, Lock, Mail } from "lucide-react";
+import { User, Bell, Lock, Mail, MapPin } from "lucide-react"; // Import MapPin icon
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Settings() {
@@ -94,6 +94,121 @@ export default function Settings() {
                 }}
               >
                 Save Changes
+              </button>
+            </form>
+          </motion.div>
+        )}
+        {activeTab === "farm-info" && ( // New Farm Information tab content
+          <motion.div
+            key="farm-info"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h4 className="text-xl font-semibold text-white mb-4">
+              Farm Information
+            </h4>
+            <form className="space-y-4">
+              <div>
+                <label
+                  htmlFor="farm-name"
+                  className="block text-white text-sm font-bold mb-2"
+                >
+                  Farm Name
+                </label>
+                <input
+                  type="text"
+                  id="farm-name"
+                  defaultValue="Green Acres Farm"
+                  className="w-full p-3 rounded-lg text-white"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    outline: "none",
+                    "--tw-ring-color": "#2a9d8f",
+                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                    transition: "box-shadow 0.15s ease-in-out",
+                  }}
+                  onFocus={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 2px var(--tw-ring-color)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 0px var(--tw-ring-color)")
+                  }
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="farm-location"
+                  className="block text-white text-sm font-bold mb-2"
+                >
+                  Farm Location (Address)
+                </label>
+                <input
+                  type="text"
+                  id="farm-location"
+                  defaultValue="123 Farm Road, Rural Town, State, 12345"
+                  className="w-full p-3 rounded-lg text-white"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    outline: "none",
+                    "--tw-ring-color": "#2a9d8f",
+                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                    transition: "box-shadow 0.15s ease-in-out",
+                  }}
+                  onFocus={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 2px var(--tw-ring-color)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 0px var(--tw-ring-color)")
+                  }
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="farm-coordinates"
+                  className="block text-white text-sm font-bold mb-2"
+                >
+                  Farm Coordinates (Latitude, Longitude)
+                </label>
+                <input
+                  type="text"
+                  id="farm-coordinates"
+                  defaultValue="34.0522, -118.2437" // Example coordinates
+                  className="w-full p-3 rounded-lg text-white"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    outline: "none",
+                    "--tw-ring-color": "#2a9d8f",
+                    boxShadow: "0 0 0 0px var(--tw-ring-color)",
+                    transition: "box-shadow 0.15s ease-in-out",
+                  }}
+                  onFocus={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 2px var(--tw-ring-color)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.boxShadow =
+                      "0 0 0 0px var(--tw-ring-color)")
+                  }
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-6 py-2 rounded-lg text-white shadow-md transition-all duration-300"
+                style={{
+                  background: "linear-gradient(to right, #2a9d8f, #264653)",
+                  "&:hover": {
+                    boxShadow:
+                      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  },
+                }}
+              >
+                Save Farm Information
               </button>
             </form>
           </motion.div>
@@ -355,6 +470,27 @@ export default function Settings() {
             }}
           >
             <User size={20} className="mr-3" /> Profile
+          </button>
+          <button
+            onClick={() => setActiveTab("farm-info")} // New button for Farm Information
+            className={`flex items-center p-3 rounded-lg text-white text-lg transition-all`}
+            style={{
+              backgroundColor:
+                activeTab === "farm-info"
+                  ? "linear-gradient(to right, #2a9d8f, #264653)"
+                  : "transparent",
+              background:
+                activeTab === "farm-info"
+                  ? "linear-gradient(to right, #2a9d8f, #264653)"
+                  : "transparent",
+              boxShadow:
+                activeTab === "farm-info"
+                  ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                  : "none",
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+            }}
+          >
+            <MapPin size={20} className="mr-3" /> Farm Information
           </button>
           <button
             onClick={() => setActiveTab("notifications")}

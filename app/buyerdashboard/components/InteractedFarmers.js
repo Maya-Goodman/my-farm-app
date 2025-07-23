@@ -1,42 +1,33 @@
-"use client";
-
-import React from "react";
+// app/buyerdashboard/components/InteractedFarmers.js
 import GlassCard from "@/app/components/GlassCard";
-import { Handshake, Star } from "lucide-react";
+import { Handshake, Star, MapPin } from "lucide-react";
 
 export default function InteractedFarmers({ farmers }) {
   return (
     <GlassCard className="p-6">
-      <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-        <Handshake size={24} className="mr-3" /> Interacted Farmers
+      <h3 className="text-2xl font-bold text-white mb-6">
+        <Handshake size={24} className="inline-block mr-2" /> Interacted Farmers
       </h3>
-      {farmers.length === 0 ? (
-        <p className="text-white text-lg opacity-80 text-center py-4">
-          No interacted farmers yet.
-        </p>
-      ) : (
-        <ul className="space-y-4">
-          {farmers.map((farmer) => (
-            <li
-              key={farmer.id}
-              className="flex justify-between items-center bg-white bg-opacity-10 p-3 rounded-lg"
-            >
-              <div>
-                <p className="text-lg text-white font-semibold">
-                  {farmer.name}
-                </p>
-                <p className="text-sm text-white opacity-70">
-                  {farmer.location}
-                </p>
+      <ul className="space-y-4">
+        {farmers.map((farmer) => (
+          <li
+            key={farmer.id}
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 rounded-lg border border-white border-opacity-20" // Removed background color
+          >
+            <div>
+              <p className="text-lg text-white font-semibold">{farmer.name}</p>
+              <div className="flex items-center text-sm text-white opacity-70 mt-1">
+                <MapPin size={16} className="mr-2" />
+                <span>{farmer.location}</span>
               </div>
-              <div className="flex items-center text-yellow-400">
-                <Star size={16} fill="currentColor" className="mr-1" />
-                <span className="font-bold">{farmer.rating.toFixed(1)}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            </div>
+            <div className="flex items-center text-yellow-400 mt-2 sm:mt-0">
+              <Star size={16} fill="currentColor" className="mr-1" />
+              <span className="font-bold">{farmer.rating.toFixed(1)}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
     </GlassCard>
   );
 }

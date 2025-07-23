@@ -64,9 +64,9 @@ export default function HomePage() {
       {/* Hero Section - Split Screen */}
       <section
         className="relative min-h-screen flex items-center pt-20 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/background3.jpg')" }}
+        style={{ backgroundImage: "url('/images/background4.jpg')" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black to-blue-900/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black/30 to-blue-900/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-6 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-400 border border-green-500/30 text-lg mb-8">

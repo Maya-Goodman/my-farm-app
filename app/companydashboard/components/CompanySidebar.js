@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"; // Make sure motion is imported
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation"; // Import useRouter
 
@@ -174,7 +174,7 @@ export default function CompanySidebar({ isSidebarOpen, setIsSidebarOpen }) {
         </motion.div>
 
         {/* Logout Button */}
-        <button
+        <motion.button // Changed from 'button' to 'motion.button'
           onClick={handleLogout}
           className="w-full flex items-center p-3 rounded-lg text-white transition-all duration-200"
           style={{
@@ -198,7 +198,7 @@ export default function CompanySidebar({ isSidebarOpen, setIsSidebarOpen }) {
               Log Out
             </motion.span>
           )}
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );

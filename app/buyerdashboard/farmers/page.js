@@ -3,7 +3,7 @@
 
 import GlassCard from "@/app/components/GlassCard";
 import { Handshake, Star, MapPin } from "lucide-react";
-import InteractedFarmers from "../components/InteractedFarmers";// Re-use the component
+import InteractedFarmers from "../components/InteractedFarmers"; // Re-use the component
 
 const initialFarmers = [
   {
@@ -39,7 +39,7 @@ export default function FarmersPage() {
           {initialFarmers.map((farmer) => (
             <li
               key={farmer.id}
-              className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white bg-opacity-10 p-3 rounded-lg"
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 rounded-lg border border-white border-opacity-20" // Removed background color
             >
               <div>
                 <p className="text-lg text-white font-semibold">
